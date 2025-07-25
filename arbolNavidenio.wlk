@@ -1,10 +1,35 @@
 class ArbolNavidenio {
   var property vejez
   var property tamañoDeTronco
+  var property capacidadParaContenerCosas = vejez * tamañoDeTronco
+  var property objetosEnArbol = []
 
-  method capacidadParaContenerCosas() = vejez * tamañoDeTronco
+  method capacidadDisponible() {
+    return capacidadParaContenerCosas
+  }
 
+  method ponerEnElArbol(objeto) {
+    if (capacidadParaContenerCosas >= objeto.lugar()) {
+      capacidadParaContenerCosas - objeto.lugar()
+      objetosEnArbol.add(objeto)
+    } else {
+      self.error("No hay lugar para agregar este objeto")
+    }
+  }
 
+  method importancia() = objetosEnArbol.sum({ob => ob.importancia()})
+
+  method cosasImportantes() {
+    objetosEnArbol.filter({ob => ob.importancia() > objetosEnArbol.importancia() / objetosEnArbol.size()})
+  }
+  
+  method eliminarObjetosVoluminozos() {
+   objetosEnArbol = objetosEnArbol.filter({ob => ob.lugar() <= 5}) 
+  }
+
+  method destinatarios() {
+    (objetosEnArbol.map({ob => ob.destinatario()})).sortBy({a, b => a.objetoRecibido() < b.objetoRecibido()})
+  }
 }
 
 object casa {
@@ -12,12 +37,23 @@ object casa {
 }
 
 class Habitante {
-  
+  var property recibidos = 0
+
+  method objetoRecibido() = recibidos + 1
 }
 
-class Regalo {
-  //Cada uno tiene un conjunto de destinatarios
+class ObjetosParaDar  {
   var property destinatarios = []
+
+  method darA(persona) {
+    self.destinatarios().add(persona)
+    casa.habitantes().add(persona)
+    persona.objetoRecibido()
+  }
+}
+
+class Regalo inherits ObjetosParaDar {
+  //Cada uno tiene un conjunto de destinatarios
   //Ocupa un solo lugar del árbol
   var property lugar = 1
 
@@ -25,12 +61,12 @@ class Regalo {
   method importancia() = 2 * destinatarios.size()
 }
 
-class Tarjeta {
+class Tarjeta inherits ObjetosParaDar {
   //De cada una se sabe su destinatario y su importancia
-  var property destinatarios = []
   var property importancia
+
   //No ocupa lugar en el árbol
-  var property lugar = 0 
+  var property lugar = 0
 }
 
 class Adorno {
