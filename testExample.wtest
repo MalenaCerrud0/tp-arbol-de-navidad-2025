@@ -1,0 +1,39 @@
+import arbolNavidenio.*
+
+describe "Tests de ArbolNavidenio.wlk" {
+  test "Armado del arbol navideño con objetos variados" {
+    var arbol = new ArbolNavidenio(vejez = 2 , tamanioDeTronco = 5)
+    
+    var regalo1 = new Regalo()
+    var persona1 = new Habitante()
+    var persona2 = new Habitante()
+    var persona3 = new Habitante()
+    regalo1.esPara(persona1)
+    regalo1.esPara(persona2)
+    regalo1.esPara(persona3)
+    arbol.ponerEnElArbol(regalo1)
+
+    var tarjeta1 = new Tarjeta(importancia = 2)
+    tarjeta1.esPara(persona3)
+    arbol.ponerEnElArbol(tarjeta1)
+
+    var adorno1 = new Adorno(pesoBase = 4, coeficienteDeSuperioridad = 3)
+    var estrella1 = new EstrellaDeBelen()
+    arbol.ponerEnElArbol(adorno1)
+    arbol.ponerEnElArbol(estrella1)
+    
+    assert.equals(4, (arbol.objetosEnArbol()).size()) //3 objetos en el arbol
+    assert.equals(5, arbol.capacidadDisponible()) //6 de capacidad
+    assert.equals(30, arbol.importancia()) //28 de importancia, la suma de todas las importancias
+    assert.equals(casa.habitantes(), estrella1.destinatarios())
+    assert.equals([persona1, persona2, persona3], arbol.destinatarios())
+  }
+
+}
+
+/*
+destinatarios() del árbol debe contener todos los
+destinatarios de regalos, tarjetas y estrella, sin repetir (asSet())
+
+
+*/

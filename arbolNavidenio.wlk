@@ -1,7 +1,7 @@
 class ArbolNavidenio {
   var property vejez
-  var property tamañoDeTronco
-  var property capacidadParaContenerCosas = vejez * tamañoDeTronco
+  var property tamanioDeTronco
+  var property capacidadParaContenerCosas = vejez * tamanioDeTronco
   var property objetosEnArbol = []
 
   method capacidadDisponible() {
@@ -10,8 +10,8 @@ class ArbolNavidenio {
 
   method ponerEnElArbol(objeto) {
     if (capacidadParaContenerCosas >= objeto.lugar()) {
-      capacidadParaContenerCosas - objeto.lugar()
-      objetosEnArbol.add(objeto)
+      capacidadParaContenerCosas -= objeto.lugar()
+      self.objetosEnArbol().add(objeto)
     } else {
       self.error("No hay lugar para agregar este objeto")
     }
@@ -28,7 +28,7 @@ class ArbolNavidenio {
   }
 
   method destinatarios() {
-    (objetosEnArbol.map({ob => ob.destinatario()})).sortBy({a, b => a.objetoRecibido() < b.objetoRecibido()})
+    return (objetosEnArbol.flatMap({ob => ob.destinatarios()}).asSet()).asList().sortBy({a, b => a.recibido().size() < b.recibido().size()})
   }
 }
 
@@ -37,18 +37,19 @@ object casa {
 }
 
 class Habitante {
-  var property recibidos = 0
+  var property recibido = []
 
-  method objetoRecibido() = recibidos + 1
+  method recibirObjeto() = self.recibido().add("111")
+
 }
 
 class ObjetosParaDar  {
   var property destinatarios = []
 
-  method darA(persona) {
+  method esPara(persona) {
     self.destinatarios().add(persona)
     casa.habitantes().add(persona)
-    persona.objetoRecibido()
+    persona.recibirObjeto()
   }
 }
 
@@ -71,16 +72,19 @@ class Tarjeta inherits ObjetosParaDar {
 
 class Adorno {
   //Tienen un peso base que es distinto para cada adorno
+  var property destinatarios = []
   var property pesoBase
   var property coeficienteDeSuperioridad
 
   //Su importancia se determina como su peso multiplicado por su coeficiente de superioridad
   method importancia() = pesoBase * coeficienteDeSuperioridad
   //Ocupa tanto lugar como su peso, pero sin superar 3 lugares
-  method lugar() = pesoBase.max(3)
+  method lugar() = pesoBase.min(3)
 }
 
 class FiguraElaborada {
+
+
   //Cada figura consiste en un conjunto de adornos
   var property adornos = []
 
